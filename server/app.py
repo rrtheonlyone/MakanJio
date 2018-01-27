@@ -2,12 +2,15 @@ from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import *
 import ast
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_API'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, '..', 'database',     'test.db')
 db = SQLAlchemy(app)
 api = Api(app)
-   
+
 # feedbacks = db.Table('feedbacks',
 #     db.Column('feedbackId', db.ForeignKey('feedback.feedbackId'), primary_key=True),
 #     db.Column('personId', db.ForeignKey('person.personId'), primary_key=True)
@@ -57,11 +60,17 @@ class Feedback(db.Model):
 
 class getAll(Resource):
     def get(self):
-        pass
+        return "LOL"
     def post(self):
         pass
 
+class getFood(Resource):
+    def get(self, foodid):
+        print "Hello"
+        print self.cookId
+
 api.add_resource(getAll, '/cook/all')
+api.add_resource(getFood, '/cook/<int:foodid>')
 
 if __name__ == '__main__':
     app.run(debug=True)
