@@ -7,6 +7,7 @@ import history from './history';
 import Home from './component/start/main'
 import NavBar from './component/common/navbar'
 
+import SimpleMap from './component/map/main'
 
 class App extends Component {
   render() {
