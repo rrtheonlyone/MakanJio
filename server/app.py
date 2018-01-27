@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import *
 import ast
@@ -7,6 +8,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, '..', 'database', 'test.db')
 db = SQLAlchemy(app)
 api = Api(app)
@@ -62,56 +64,87 @@ class Feedback(db.Model):
     foodId = db.Column(db.Integer, db.ForeignKey('food.foodId'))
     message = db.Column(db.String(2000))
 
-#ducttape
-#returns a Dict
-def getFeedback(id):
-    # Output is desc, chef, feedback in that order
-    o = [] #debug
-    foodEvent = Food.query.filter_by(foodId=id).first()
-    o.append(foodEvent.description)
-    cook = foodEvent.cook
-    o.append(cook.personName)
-    feedbacklist = []
-    for feedback in foodEvent.feedbacks:
-        feedbacklist.append({feedback.feedbackAuthor.personName: feedback.message})
-    o.append(feedbacklist)
-    return o
 
+#    0     1      2   3    4        5          6       7      8       9        10
+# foodId cookId long lat price description datetime cuisine quota attendees feedback
 class getAll(Resource):
     #Returns a list of dicts
     def get(self):
         o = []
         for event in Food.query.all():
-            collect = {}
-            collect['foodId'] = event.foodId
-            collect['cookId'] = event.cookId
-            collect['long'] = event.locationLong
-            collect['lat'] = event.locationLat
-            collect['price'] = event.price
-            collect['description'] = event.description
-            collect['datetime'] = event.datetime
-            collect['cuisine'] = event.cuisine
-            collect['quota'] = event.quota
+            collect = []
+            collect.append(event.foodId)
+            collect.append(event.cookId)
+            collect.append(event.locationLong)
+            collect.append(event.locationLat)
+            collect.append(event.price)
+            collect.append(event.description)
+            collect.append(event.datetime)
+            collect.append(event.cuisine)
+            collect.append(event.quota)
             guestlist = []
             for attendee in event.attendees:
                 guestlist.append(attendee.personName)
-            collect['attendees'] = guestlist
+            collect.append(guestlist)
             feedbacklist = []
             for feedback in event.feedbacks:
-                feedbacklist.append({feedback.feedbackAuthor.personName: feedback.message})
-            collect['feedback'] = feedbacklist
+                feedbacklist.append([feedback.feedbackAuthor.personName, feedback.message, feedback.rating])
+            collect.append(feedbacklist)
             o.append(collect)
         return o
 
     def post(self):
         pass
 
+
+#       0       1     2       3
+# description chef feedback score
 class getFood(Resource):
-    def get(self, foodid):
-        return getFeedback(foodid)
+    def get(self, id):
+        # Output is desc, chef, feedback in that order
+        o = []
+        foodEvent = Food.query.filter_by(foodId=id).first()
+        o.append(foodEvent.description)
+        cook = foodEvent.cook
+        o.append(cook.personName)
+        feedbacklist = []
+        overallscore = 0 #This will be a 2 digit number = 10*actual score
+        for feedback in foodEvent.feedbacks:
+            feedbacklist.append([feedback.feedbackAuthor.personName, feedback.message, feedback.rating])
+            overallscore += feedback.rating
+        o.append(feedbacklist)
+        if len(feedbacklist) == 0:
+            o.append(0)
+        else:
+            o.append(10*overallscore/len(feedbacklist))
+        return o
+
+
+#    0          1         2
+# chefname description feedbacks overallrating
+class getChef(Resource):
+    def get(self,id):
+        o = []
+        currChef = Person.query.filter_by(personId=id).first()
+        o.append(currChef.personName)
+        o.append(currChef.personDesc)
+        feedbacklist = []
+        overallscore = 0 #This will be a 2 digit number = 10*actual score
+        # name, message, rating in that order
+        for feedback in Feedback.query.filter_by(cookId=id):
+            feedbacklist.append([feedback.feedbackAuthor.personName, feedback.message, feedback.rating])
+            overallscore += feedback.rating
+        o.append(feedbacklist)
+        if len(feedbacklist) == 0:
+            o.append(0)
+        else:
+            o.append(10*overallscore/len(feedbacklist))
+        return o
+
+
 
 api.add_resource(getAll, '/event')
-api.add_resource(getFood, '/event/<int:foodid>')
+api.add_resource(getFood, '/event/<int:id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
