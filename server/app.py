@@ -67,15 +67,16 @@ class Feedback(db.Model):
 #ducttape
 #returns a Dict
 def getFeedback(id):
-    o = {} #debug
+    # Output is desc, chef, feedback in that order
+    o = [] #debug
     foodEvent = Food.query.filter_by(foodId=id).first()
-    o["description"] = foodEvent.description
+    o.append(foodEvent.description)
     cook = foodEvent.cook
-    o["cook"] = cook.personName
+    o.append(cook.personName)
     feedbacklist = []
     for feedback in foodEvent.feedbacks:
         feedbacklist.append({feedback.feedbackAuthor.personName: feedback.message})
-    o['feedback'] = feedbacklist
+    o.append(feedbacklist)
     return o
 
 class getAll(Resource):
@@ -111,8 +112,8 @@ class getFood(Resource):
     def get(self, foodid):
         return getFeedback(foodid)
 
-api.add_resource(getAll, '/cook/all')
-api.add_resource(getFood, '/cook/<int:foodid>')
+api.add_resource(getAll, '/event')
+api.add_resource(getFood, '/event/<int:foodid>')
 
 if __name__ == '__main__':
     app.run(debug=True)
