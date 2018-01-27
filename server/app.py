@@ -14,21 +14,26 @@ class Person(db.Model):
     # foods = db.relationship('Food', secondary=foods, lazy='subquery',
     #     backref=db.backref('persons', lazy=True))
 
-class Food(db.Model):
-    foodId = db.Column(db.Integer, primary_key=True)
-    cookId = db.Column(db.Integer, db.ForeignKey('person.id'))
-    locationLong = db.Column(db.Float)
-    locationLat = db.Column(db.Float)
-    price = db.Column(db.Integer)
-    description = db.Column(db.String(2000))
-
     def __repr__(self):
-        return '<Fud, cook = %d>' % self.cookID
-   
+        return '<Hooman, id = %d, name = %s>' % (self.personId, self.personName)
+
 attendees = db.Table('attendees',
     db.Column('foodId', db.ForeignKey('food.foodId'), primary_key=True),
     db.Column('attendeeId', db.ForeignKey('person.personId'), primary_key=True)
 )
+
+class Food(db.Model):
+    foodId = db.Column(db.Integer, primary_key=True)
+    cookId = db.Column(db.Integer, db.ForeignKey('person.personId'))
+    locationLong = db.Column(db.Float)
+    locationLat = db.Column(db.Float)
+    price = db.Column(db.Integer)
+    description = db.Column(db.String(2000))
+    # attendees = db.relationship('Attendee', secondary=attendees, lazy
+
+    def __repr__(self):
+        return '<Fud, d = %d, cook = %d>' % (self.foodId, self.cookId)
+   
 
 class Feedback(db.Model):
     feedbackId = db.Column(db.Integer, primary_key=True)
