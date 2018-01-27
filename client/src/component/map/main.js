@@ -3,7 +3,11 @@ import GoogleMapReact from 'google-map-react';
 
 import {Panel, Glyphicon, Button} from 'react-bootstrap'
 
-const AnyReactComponent = ({ text }) => <Button bsStyle="success"><Glyphicon glyph="flash" /></Button>;
+import { connect } from 'react-redux'
+import {getEvent} from '../../action/event'
+
+
+const AnyReactComponent = ({ text }) => <Button bsStyle="success"><Glyphicon glyph="cutlery" /></Button>;
 
 class SimpleMap extends Component {
   static defaultProps = {
@@ -15,17 +19,18 @@ class SimpleMap extends Component {
     ]
   };
 
+  componentDidMount() {
+    this.props.dispatch(getEvent())
+  }
+
   render() {
 
     const places = this.props.greatPlaces
       .map(place => {
-        const {id, ...coords} = place;
-
         return (
           <AnyReactComponent
-            key={id}
-            {...coords}
-            text={id}
+            lat={place.lat}
+            lng={place.lng}
           />
         );
       })
@@ -36,15 +41,15 @@ class SimpleMap extends Component {
         defaultCenter={this.props.center}
         defaultZoom={this.props.zoom}
       >
-        <AnyReactComponent
-          lat={1.37}
-          lng={103.83}
-          text={'Kreyser Avrora'}
-        />
+        {places}
       </GoogleMapReact>
       </div>
     );
   }
 }
 
-export default SimpleMap
+function mapStateToProps(state) {
+  return { event: state.event.event };
+}
+
+export default connect(mapStateToProps)(SimpleMap)
