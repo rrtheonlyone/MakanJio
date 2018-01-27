@@ -7,7 +7,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, '..', 'database',     'test.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, '..', 'database', 'test.db')
 db = SQLAlchemy(app)
 api = Api(app)
 
@@ -57,6 +57,18 @@ class Feedback(db.Model):
     foodId = db.Column(db.Integer, db.ForeignKey('food.foodId'))
     message = db.Column(db.String(2000))
 
+#ducttape
+def getDetails(id):
+    o = [] #debug
+    foodEvent = Food.query.filter_by(foodId=id).first()
+    print("Description: " + foodEvent.description)
+    cook = foodEvent.cook
+    print("Cook name: " + cook.personName)
+    print("Feedback about the event")
+    for feedback in foodEvent.feedbacks:
+        o += "From " + feedback.feedbackAuthor.personName + ": " + feedback.message
+    return o
+
 
 class getAll(Resource):
     def get(self):
@@ -66,8 +78,7 @@ class getAll(Resource):
 
 class getFood(Resource):
     def get(self, foodid):
-        print "Hello"
-        print self.cookId
+        getDetails(1)
 
 api.add_resource(getAll, '/cook/all')
 api.add_resource(getFood, '/cook/<int:foodid>')

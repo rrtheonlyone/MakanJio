@@ -18,8 +18,8 @@ db.session.commit()
 
 Person.query.all()
 
-food1 = Food(foodId=1, cookId=3, locationLong=0, locationLat=0, price=1000,
-description='Ubiquitous')
+food1 = Food(foodId=1, cookId=3, locationLong=105, locationLat=1.16, price=1000, description='Ubiquitous')
+food2 = Food(foodId=2, cookId=2, locationLong=105.2, locationLat=1.17, price=890, description='Not so ubiquitous')
 
 db.session.add(food1)
 db.session.add(food2)
@@ -27,10 +27,8 @@ db.session.commit()
 
 Food.query.all()
 
-feedback1 = Feedback(feedbackId=1, feedbackAuthorId=1, foodId=1, message='The food
-God only knows')
-feedback2 = Feedback(feedbackId=2, feedbackAuthorId=2, foodId=1, message='Your fuudo
-is shit')
+feedback1 = Feedback(feedbackId=1, feedbackAuthorId=1, foodId=1, message='The foodGod only knows')
+feedback2 = Feedback(feedbackId=2, feedbackAuthorId=2, foodId=1, message='Your fuudois shit')
 
 db.session.add(feedback1)
 db.session.add(feedback2)
