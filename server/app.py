@@ -7,12 +7,17 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_API'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 api = Api(app)
+   
+feedbacks = db.Table('feedbacks',
+    db.Column('feedbackId', db.ForeignKey('feedback.feedbackId'), primary_key=True),
+    db.Column('personId', db.ForeignKey('person.personId'), primary_key=True)
+)
 
 class Person(db.Model):
     personId = db.Column(db.Integer, primary_key=True)
     personName = db.Column(db.String(120), nullable=False)
-    # foods = db.relationship('Food', secondary=foods, lazy='subquery',
-    #     backref=db.backref('persons', lazy=True))
+    feedbacks = db.relationship('Feedback', secondary=feedbacks, lazy='subquery',
+        backref=db.backref('persons', lazy=True))
 
     def __repr__(self):
         return '<Hooman, id = %d, name = %s>' % (self.personId, self.personName)
@@ -29,21 +34,17 @@ class Food(db.Model):
     locationLat = db.Column(db.Float)
     price = db.Column(db.Integer)
     description = db.Column(db.String(2000))
-    # attendees = db.relationship('Attendee', secondary=attendees, lazy
+    attendees = db.relationship('Person', secondary=attendees, lazy='subquery',
+        backref=db.backref('foods', lazy=True))
 
     def __repr__(self):
         return '<Fud, d = %d, cook = %d>' % (self.foodId, self.cookId)
-   
+
 
 class Feedback(db.Model):
     feedbackId = db.Column(db.Integer, primary_key=True)
-    cookId = db.Column(db.Integer, db.ForeignKey('person.personId'))
+    feedbackerId = db.Column(db.Integer, db.ForeignKey('person.personId'))
     message = db.Column(db.String(2000))
-    
-feedbacks = db.Table('feedbacks',
-    db.Column('feedbackId', db.ForeignKey('feedback.feedbackId'), primary_key=True),
-    db.Column('personId', db.ForeignKey('person.personId'), primary_key=True)
-)
 
 class getAll(Resource):
     def get(self):
