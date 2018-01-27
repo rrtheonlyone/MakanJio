@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api, reqparse
-from flask_sqlalchemy import SQLAlchemy
-
+from flask_sqlalchemy import *
 import ast
 
 app = Flask(__name__)
@@ -9,35 +8,45 @@ app.config['SQLALCHEMY_DATABASE_API'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 api = Api(app)
 
+class Person(db.Model):
+    personId = db.Column(db.Integer, primary_key=True)
+    personName = db.Column(db.String(120), nullable=False)
+    # foods = db.relationship('Food', secondary=foods, lazy='subquery',
+    #     backref=db.backref('persons', lazy=True))
+
 class Food(db.Model):
-    foodid = db.Column(db.Integer, primary_key=True)
-    cook = db.Column(db.String(80), nullable=False)
-    description = db.Column(db.String(2000), nullable=False)
-    placeLong = db.Column(db.Float, nullable=False)
-    placeLat = db.Column(db.Float, nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    foodId = db.Column(db.Integer, primary_key=True)
+    cookId = db.Column(db.Integer, db.ForeignKey('person.id'))
+    locationLong = db.Column(db.Float)
+    locationLat = db.Column(db.Float)
+    price = db.Column(db.Integer)
+    description = db.Column(db.String(2000))
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<Fud, cook = %d>' % self.cookID
+   
+attendees = db.Table('attendees',
+    db.Column('foodId', db.ForeignKey('food.foodId'), primary_key=True),
+    db.Column('attendeeId', db.ForeignKey('person.personId'), primary_key=True)
+)
 
-# This is for people who are particiapting in the dining
-class FoodPeople(db.Model):
-    foodid = db.Column(db.Integer, ForeignKey('Food.foodid'), nullable=False)
-    people = db.Column(db.String(120), nullable=False)
+class Feedback(db.Model):
+    feedbackId = db.Column(db.Integer, primary_key=True)
+    cookId = db.Column(db.Integer, db.ForeignKey('person.personId'))
+    message = db.Column(db.String(2000))
+    
+feedbacks = db.Table('feedbacks',
+    db.Column('feedbackId', db.ForeignKey('feedback.feedbackId'), primary_key=True),
+    db.Column('personId', db.ForeignKey('person.personId'), primary_key=True)
+)
 
-class FeedbackPeople(db.Model):
-    foodid = db.Column(db.Integer, ForeignKey('Food.foodid'), nullable=False)
-    people = db.Column(db.String(120), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
-
-class Sorting(Resource):
+class getAll(Resource):
     def get(self):
-        return "This is the sorting problem answer"
-
+        pass
     def post(self):
-        return qsort(request.get_json(force=True))
+        pass
 
-api.add_resource(Sorting, '/sort')
+api.add_resource(getAll, '/cook/all')
 
 if __name__ == '__main__':
     app.run(debug=True)
