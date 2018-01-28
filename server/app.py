@@ -218,9 +218,9 @@ class postComment(Resource):
 class reset(Resource):
     def get(self):
         # KILL
-        db.Feedback.query.delete()
-        db.Food.query.delete()
-        db.Person.query.delete()
+        Feedback.query.delete()
+        Food.query.delete()
+        Person.query.delete()
 
         # REVIVE
         person1 = Person(personId=1, personName='Alicia Amma', personDesc='I am a professional chef of 35 years. Having studied under Gordon Ramsey, I am confident that my food will tantalize your palate. Do message me to let me know of what sort of experience you would like to have, and I will specifically craft it for you.')
@@ -288,6 +288,7 @@ class addOn(Resource):
         db.session.add(newFood)
         db.session.commit()
 
+        return {'Status' : 200}
 
 api.add_resource(getAll, '/event')
 api.add_resource(getFood, '/event/<int:fudId>')
