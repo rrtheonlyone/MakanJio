@@ -1,5 +1,39 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.purpleNav {
+ 	background: #660066 !important;
+ 	border-color: transparent;
+  	transition: background-color 500ms ease-in;
+}
+
+.transparentNav {
+	background: transparent;
+	border-color: transparent;
+}
+
+.transparentNav a {
+	color: white !important;
+}
+
+.purpleNav a {
+	color: white !important;
+}
+
+.transparentNav .navbar-header a {
+	color: black !important;
+}
+
+#first {
+	background-image: url("./bg_jum.jpg");
+	background-size: cover;
+	height: 400px;
+	color: black;
+}
+
+#mainHeader {
+	font-family: 'Indie Flower', cursive;
 }

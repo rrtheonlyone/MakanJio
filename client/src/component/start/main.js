@@ -13,17 +13,19 @@ class Home extends React.Component{
 
   render() {
     return <div>
-            <Jumbotron>
+            <Jumbotron id="first">
               <Grid>
-              <h2>Makan Jio</h2>
-              <p>Food Sharing Made more convenient. Scroll down for more details!</p>
+              <h1 id="mainHeader">Makan Jio</h1>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam et ligula lacus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+              <Button bsStyle="primary" bsSize="large"><Glyphicon glyph="plus" />&nbsp;Add an event today</Button>
+              <br/><br/>
               <Glyphicon glyph="chevron-down" />
               </Grid>
             </Jumbotron>
 
             <Grid>
               <Row>
-                <h3>Find food near you!</h3>
+                <PageHeader><Glyphicon glyph="question-sign" />&nbsp;Find Food Near you <small>Hover for more details</small></PageHeader>
                 <SimpleMap/>
               </Row>
 

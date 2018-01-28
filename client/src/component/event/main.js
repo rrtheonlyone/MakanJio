@@ -23,7 +23,7 @@ class EventDetail extends Component {
         <Grid>
           <Row>
             <h2><Glyphicon glyph="list-alt" />&nbsp;Event Details</h2>
-            <h4><Glyphicon glyph="time" />&nbsp;Date and Time:</h4>
+            <h4><Glyphicon glyph="time" />&nbsp;Date and Time: {event[6]}</h4>
           </Row>
 
           <hr/>
@@ -31,7 +31,7 @@ class EventDetail extends Component {
           <Row>
             <Col sm={6}>
               <Panel>
-                <h4>&nbsp;<Glyphicon glyph="grain" />&nbsp;Hosted by: {event[1]}</h4>
+                <h4>&nbsp;<Glyphicon glyph="grain" />&nbsp;Hosted by: {event[12]}</h4>
                 <br/>
                 <h4>&nbsp;<u>Description:</u></h4>
                 <p>{event[0]}</p>
