@@ -45,7 +45,7 @@ class Food(db.Model):
     locationLat = db.Column(db.Float)
     price = db.Column(db.Integer) #In cents
     description = db.Column(db.String(2000))
-    datetime = db.Column(db.Integer) #Datetime in yymmddhhmm
+    datetime = db.Column(db.String(150)) #Datetime in yymmddhhmm
     cuisine = db.Column(db.String(150))
     quota = db.Column(db.Integer)
     title = db.Column(db.String(150))
@@ -125,6 +125,7 @@ def eventmethod(event):
         collect.append(0)
     else:
         collect.append(10*overallscore/len(feedbacklist))
+    collect.append(Person.query.filter_by(personId=collect[1]).first().personName)
     return collect
 
 
@@ -174,12 +175,24 @@ class postComment(Resource):
 
 class goingtoEvent(Resource):
     def post(self):
+        id = self.request.form.get('id')
+        event = self.request.form.get('event')
+        dude = Person.query.filter_by(personId=id).first()
+        event = Food.query.filter_by(foodId=event).first()
+        event.children.append(dude)
+        db.session.add(event)
+
+
+class reset(Resource):
+    def get(self):
+        #resets the database
         pass
 
 api.add_resource(getAll, '/event')
 api.add_resource(getFood, '/event/<int:id>')
 api.add_resource(getChef, '/chef/<int:id>')
 api.add_resource(postComment, '/feedback/<int:eventId>')
+api.add_resource(reset, '/reset')
 
 if __name__ == '__main__':
     app.run(debug=True)
