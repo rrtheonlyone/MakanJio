@@ -21,19 +21,33 @@ function eventError(err) {
 	}
 }
 
-export function getEvent() {
+export function getEvent(id=undefined) {
 		return (dispatch) => {
-			axios({
-					method: 'get',
-					url: '/cook/all',
-				  })
-				 .then((response) => {
-				 	dispatch(eventSuccess(response.data.data));
-				 })
-				 .catch((error) => {
-				 	const msg = (error.response) ? error.response.data : "Error Retrieving Events! Something went wrong";
-				 	dispatch(eventError(msg));
-				 });
+			if (id) {
+				axios({
+						method: 'get',
+						url: '/event/' + id,
+					  })
+					 .then((response) => {
+					 	dispatch(eventSuccess(response.data));
+					 })
+					 .catch((error) => {
+					 	const msg = (error.response) ? error.response.data : "Error Retrieving Events! Something went wrong";
+					 	dispatch(eventError(msg));
+					 });
+			} else {
+				axios({
+						method: 'get',
+						url: '/event',
+					  })
+					 .then((response) => {
+					 	dispatch(eventSuccess(response.data));
+					 })
+					 .catch((error) => {
+					 	const msg = (error.response) ? error.response.data : "Error Retrieving Events! Something went wrong";
+					 	dispatch(eventError(msg));
+					 });
+			}
 		}
 }
 
