@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Navbar, Nav, NavItem, Glyphicon, NavDropdown, MenuItem } from 'react-bootstrap';
 
-class NavBar extends React.Component{
+class OtherBar extends React.Component{
 
   constructor(props) {
     super(props);
@@ -10,7 +10,7 @@ class NavBar extends React.Component{
 
 
   render(){
-	   return <Navbar fluid collapseOnSelect fixedTop className="otherBar">
+	   return <Navbar fluid collapseOnSelect className="otherBar">
 		    <Navbar.Header>
 		      <Navbar.Brand>
 		        <a href="/">Makan Jio&nbsp;<Glyphicon glyph="ice-lolly-tasted" /></a>
@@ -28,4 +28,4 @@ class NavBar extends React.Component{
 };
 
 
-export default NavBar
+export default OtherBar

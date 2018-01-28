@@ -1,7 +1,8 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
   font-family: 'Work Sans', sans-serif;
+  background-color: #FAFAF7;
 }
 
 .purpleNav {
@@ -27,6 +28,15 @@ body {
 	color: black !important;
 }
 
+.otherBar {
+	background: #660066 !important;
+ 	border-color: transparent;
+}
+
+.otherBar a {
+	color: white !important;
+}
+
 #first {
 	background-image: url("./bg_jum.jpg");
 	background-size: cover;
@@ -37,3 +47,10 @@ body {
 #mainHeader {
 	font-family: 'Indie Flower', cursive;
 }
+
+#createMap {
+	height: 500px;
+	width: 1000px;
+	margin-left: 100px;
+}
+

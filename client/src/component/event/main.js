@@ -6,7 +6,14 @@ import {Panel, Glyphicon, Button, OverlayTrigger, Popover, Grid, Row, Col, Table
 import { connect } from 'react-redux'
 import {getEvent} from '../../action/event'
 
+import OtherBar from '../common/otherbar'
+import NavBar from '../common/navbar'
+
 class EventDetail extends Component {
+
+  constructor(props) {
+    super(props)
+  }
 
   componentDidMount() {
     this.props.dispatch(getEvent(this.props.match.params.event_id))
@@ -15,10 +22,13 @@ class EventDetail extends Component {
   render() {
 
     const {event} = this.props;
-    const centre = {lat: 1.37, lng: 103.83};
+    var centre = {lat: 1.37, lng: 103.83};
+
+    const Marker = (props) => {return <h1 className="glyphicon glyphicon-cutlery"></h1> };
 
     return (
       <div>
+        <OtherBar/>
         {event &&
         <Grid>
           <Row>
@@ -31,21 +41,26 @@ class EventDetail extends Component {
           <Row>
             <Col sm={6}>
               <Panel>
-                <h4>&nbsp;<Glyphicon glyph="grain" />&nbsp;Hosted by: {event[12]}</h4>
+                <h4>&nbsp;<Glyphicon glyph="grain" />&nbsp;Hosted by: {event[13]}</h4>
                 <br/>
                 <h4>&nbsp;<u>Description:</u></h4>
-                <p>{event[0]}</p>
+                <p>{event[5]}</p>
               </Panel>
             </Col>
 
             <Col sm={6}>
+             {centre && event &&
               <div style={{"height" : "300px", "width" : "500px"}}>
               <GoogleMapReact
                 defaultCenter={centre}
-                defaultZoom={15}
+                defaultZoom={10}
               >
+                <Marker
+                  lat={event[3]}
+                  lng={event[2]}
+                />
               </GoogleMapReact>
-              </div>
+              </div>}
             </Col>
           </Row>
 
@@ -60,23 +75,20 @@ class EventDetail extends Component {
                     <th>Review</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                  </tr>
+                <tbody> 
+                  {event[10] && event[10].map((data) => {
+                          return <tr>
+                                    <td>{data[0]}</td>
+                                    <td>{data[2]}</td>
+                                    <td>{data[1]}</td>
+                                 </tr>
+                        })}
                 </tbody>
               </Table>
             </Col>
 
             <Col sm={6}>
-              <h2><Glyphicon glyph="check" />&nbsp;Price: </h2>
+              <h2><Glyphicon glyph="check" />&nbsp;Price: {event[4]}</h2>
               <Button bsStyle="primary" bsSize="large"><Glyphicon glyph="thumbs-up" />&nbsp;Join Event</Button>
               <p>Quota Remaining: 6 (Attendance List below)</p>
               <hr/>
@@ -87,12 +99,7 @@ class EventDetail extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Mark</td>
-                  </tr>
-                  <tr>
-                    <td>Jacob</td>
-                  </tr>
+                  {event[9] && event[9].map((data) => {return <tr><td>{data}</td></tr>})}
                 </tbody>
               </Table>
             </Col>

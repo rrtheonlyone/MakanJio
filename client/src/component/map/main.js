@@ -4,7 +4,7 @@ import GoogleMapReact from 'google-map-react';
 import {Panel, Glyphicon, Button, OverlayTrigger, Popover} from 'react-bootstrap'
 
 import { connect } from 'react-redux'
-import {getEvent} from '../../action/event'
+import {getAllEvent} from '../../action/event'
 
 import {Link} from 'react-router-dom'
 
@@ -14,8 +14,8 @@ class SimpleMap extends Component {
     zoom: 11
   };
 
-  componentDidMount() {
-    this.props.dispatch(getEvent())
+  componentWillMount() {
+    this.props.dispatch(getAllEvent())
   }
 
   render() {
@@ -27,7 +27,7 @@ class SimpleMap extends Component {
                                   </OverlayTrigger>
                               };
 
-    const {event} = this.props;
+    const {data} = this.props;
 
     return (
       <div style={{"height" : "500px", "width" : "1000px"}}>
@@ -35,7 +35,7 @@ class SimpleMap extends Component {
         defaultCenter={this.props.center}
         defaultZoom={this.props.zoom}
       >
-        {event && event.map((data) => {console.log(data);return <Marker lat={data[3]} lng={data[2]} key={data[0]} data={data}/>})}
+        {data && data.map((data) => {console.log(data);return <Marker lat={data[3]} lng={data[2]} key={data[0]} data={data}/>})}
       </GoogleMapReact>
       </div>
     );
@@ -43,7 +43,7 @@ class SimpleMap extends Component {
 }
 
 function mapStateToProps(state) {
-  return { event: state.event.event };
+  return { data: state.event.data };
 }
 
 export default connect(mapStateToProps)(SimpleMap)
