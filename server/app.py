@@ -125,7 +125,7 @@ def eventmethod(event):
         collect.append(0)
     else:
         collect.append(10*overallscore/len(feedbacklist))
-    collect.append(Person.query.filter_by(personId=collect[1]).first().personName)
+    collect.append(Person.query.filter_by(personId=event.cookId).first().personName)
     return collect
 
 
@@ -145,42 +145,55 @@ class getChef(Resource):
         o.append(currChef.personName)
         o.append(currChef.personDesc)
         feedbacklist = []
+        listevents = []
         overallscore = 0 #This will be a 2 digit number = 10*actual score
         # name, message, rating in that order
-        for feedback in Feedback.query.filter_by(feedbackAuthorId=id): #JesusChrist
-            feedbacklist.append([feedback.feedbackAuthor.personName, feedback.message, feedback.rating])
-            overallscore += feedback.rating
+
+        for foodEvent in currChef.events:
+            listevents.append(eventmethod(foodEvent))
+            for feedback in foodEvent.feedbacks:
+                feedbacklist.append([
+                    feedback.feedbackAuthor.personName,
+                    feedback.message, 
+                    feedback.rating])
+                overallscore += feedback.rating
+
+        # for feedback in Feedback.query.filter_by(feedbackAuthorId=id): #JesusChrist
+        #     feedbacklist.append([feedback.feedbackAuthor.personName, feedback.message, feedback.rating])
+        #     overallscore += feedback.rating
+        
         o.append(feedbacklist)
         if len(feedbacklist) == 0:
             o.append(0)
         else:
             o.append(10*overallscore/len(feedbacklist))
-        listevents = []
-        for event in Food.query.filter_by(cookId=id):
-            listevents.append(eventmethod(event))
+        o.append(listevents)
+
         return o
 
 
 class postComment(Resource):
-    def post(self):
+    def post(self, eventId):
         id = len(Feedback.query.all())
-        cookId = 2
+        authorId = 2
         rate = self.request.form.get('rating')
         desc = self.request.form.get('description')
-        fb = Feedback(feedbackId=id, feedbackAuthorId=cookId, rating=rate, foodId=eventId, message=desc)
+        fb = Feedback(feedbackId=id, feedbackAuthorId=authorId, rating=rate, foodId=eventId, message=desc)
         db.session.add(fb)
         db.commit()
         return {'Status' : 200}
 
 
-class goingtoEvent(Resource):
+class goingToEvent(Resource):
     def post(self):
         id = self.request.form.get('id')
         event = self.request.form.get('event')
         dude = Person.query.filter_by(personId=id).first()
         event = Food.query.filter_by(foodId=event).first()
-        event.children.append(dude)
+        event.attendees.append(dude)
         db.session.add(event)
+        db.commit()
+        return {'Status': 200}
 
 
 class reset(Resource):
@@ -192,6 +205,7 @@ api.add_resource(getAll, '/event')
 api.add_resource(getFood, '/event/<int:id>')
 api.add_resource(getChef, '/chef/<int:id>')
 api.add_resource(postComment, '/feedback/<int:eventId>')
+api.add_resource(goingToEvent, '/going')
 api.add_resource(reset, '/reset')
 
 if __name__ == '__main__':
