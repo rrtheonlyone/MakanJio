@@ -232,10 +232,10 @@ class reset(Resource):
         db.session.add(person3)
         db.session.commit()
 
-        food1 = Food(foodId=1, cookId=2, locationLong=103.866, locationLat=1.336, price=1200, quota=10, datetime="23rd Jan 2018, 1730hrs", cuisine='Chinese Food', description='I want to practice my tze char. I will serve 3 vegetable dishes with rice. Let us bond over dinner!', title='Simple Chinese Tze Char Dinner')
-        food2 = Food(foodId=2, cookId=1, locationLong=103.8755, locationLat=1.334, price=4800, quota=4, datetime="24th Jan 2018, 1800hrs", cuisine='Western Food', description='I am a chef of Western Food, I used to work for the Gordon Ramsay. We will be having some salads as starters, and some beef sirloin as a main. I will prepare the cuts to your liking of doneness. We will finish with a lava cake and some champaigne. This meal is best served with a family or couple.', title='Dining with a Professional Chef')
-        food3 = Food(foodId=3, cookId=2, locationLong=103.875, locationLat=1.329, price=2400, quota=6, datetime="25th Jan 2018, 1800hrs", cuisine='Lebanese Food', description='Help me see if my Lebanese cooking is delicious! We start with some home made hummus, followed by an open faced sabih, and end with Kanafe as dessert. It will be a treat to try these awesome foods from the middle east!', title='Lebanese is awesome!')
-        food4 = Food(foodId=4, cookId=3, locationLong=103.866, locationLat=1.33, price=800, quota=30, datetime="26th Jan 2018, 1800hrs", cuisine='Chinese Food', description='To celebrate Uncle and his new Hawker stall opening, Uncle will cook tze char for 30 people who sign up first. We eat together and happy together!', title="Uncle's Open House!")
+        food1 = Food(foodId=1, cookId=2, locationLong=103.8, locationLat=1.34, price=1200, quota=10, datetime="23rd Jan 2018, 1730hrs", cuisine='Chinese Food', description='I want to practice my tze char. I will serve 3 vegetable dishes with rice. Let us bond over dinner!', title='Simple Chinese Tze Char Dinner')
+        food2 = Food(foodId=2, cookId=1, locationLong=103.911, locationLat=1.32, price=4800, quota=4, datetime="24th Jan 2018, 1800hrs", cuisine='Western Food', description='I am a chef of Western Food, I used to work for the Gordon Ramsay. We will be having some salads as starters, and some beef sirloin as a main. I will prepare the cuts to your liking of doneness. We will finish with a lava cake and some champaigne. This meal is best served with a family or couple.', title='Dining with a Professional Chef')
+        food3 = Food(foodId=3, cookId=2, locationLong=103.76, locationLat=1.36, price=2400, quota=6, datetime="25th Jan 2018, 1800hrs", cuisine='Lebanese Food', description='Help me see if my Lebanese cooking is delicious! We start with some home made hummus, followed by an open faced sabih, and end with Kanafe as dessert. It will be a treat to try these awesome foods from the middle east!', title='Lebanese is awesome!')
+        food4 = Food(foodId=4, cookId=3, locationLong=103.66, locationLat=1.31, price=800, quota=30, datetime="26th Jan 2018, 1800hrs", cuisine='Chinese Food', description='To celebrate Uncle and his new Hawker stall opening, Uncle will cook tze char for 30 people who sign up first. We eat together and happy together!', title="Uncle's Open House!")
 
         db.session.add(food1)
         db.session.add(food2)
@@ -261,6 +261,8 @@ class reset(Resource):
         food3.attendees.append(person1)
         db.session.add(food3)
         db.session.commit()
+
+        return {'Status': 200}
 		
 class addOn(Resource):
     def post(self):
@@ -272,11 +274,11 @@ class addOn(Resource):
         
         longitude = 103.903
         latitude = 1.398
-        foodId = 5
+        foodId = len(Food.query.all()) + 1
         cookId = 2
         price = 3000
         quota = 5
-        datetime = "24th Jan 2018, 1900hrs"
+        datetime = "28th Jan 2018, 1900hrs"
         cuisine = "Indian"
         title = args['title']
         description = args['desc']
