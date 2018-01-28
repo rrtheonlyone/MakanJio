@@ -130,6 +130,10 @@ def eventmethod(event):
 
 
 class getFood(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('personId', type = int, location = 'json')
+        
     def get(self, fudId):
         # Output is same order as above, index 12 is score
         event = Food.query.filter_by(foodId=fudId).first()
@@ -140,18 +144,19 @@ class getFood(Resource):
     #     return {'Status': 200}
 
     def post(self, fudId):
-        print("PRINTING THE TSUNDERE RESOURCE") 
-        print(Resource)
-        print("ZERO")
-        id = Resource.request.form.get('id')
+        parser = reqparse.RequestParser()
+        parser.add_argument('personId', type=int)
+
+        args = parser.parse_args()
+
+        personId = args['personId']
         event = fudId
-        dude = Person.query.filter_by(personId=id).first()
+        dude = Person.query.filter_by(personId=personId).first()
         event = Food.query.filter_by(foodId=event).first()
         event.attendees.append(dude)
         db.session.add(event)
-        db.commit()
+        db.session.commit()
         return {'Status': 200}
-
 
 
 #    0          1          2           3            4
@@ -192,29 +197,104 @@ class getChef(Resource):
 
 class postComment(Resource):
     def post(self, eventId):
-        id = len(Feedback.query.all())
-        authorId = 2
-        rate = self.request.form.get('rating')
-        desc = self.request.form.get('description')
-        fb = Feedback(feedbackId=id, feedbackAuthorId=authorId, rating=rate, foodId=eventId, message=desc)
+        parser = reqparse.RequestParser()
+        parser.add_argument('authorId', type=int)
+        parser.add_argument('rating', type=int)
+        parser.add_argument('description', type=str)
+
+        args = parser.parse_args()
+
+        feedbackId = len(Feedback.query.all()) + 1
+        authorId = args['authorId']
+        rating = args['rating']
+        description = args['description']
+
+        fb = Feedback(feedbackId=feedbackId, feedbackAuthorId=authorId,
+            rating=rating, foodId=eventId, message=description)
         db.session.add(fb)
-        db.commit()
+        db.session.commit()
         return {'Status' : 200}
-
-
-
-# class goingToEvent(Resource):
 
 class reset(Resource):
     def get(self):
-        #resets the database
-        pass
+        # KILL
+        db.Feedback.query.delete()
+        db.Food.query.delete()
+        db.Person.query.delete()
+
+        # REVIVE
+        person1 = Person(personId=1, personName='Alicia Amma', personDesc='I am a professional chef of 35 years. Having studied under Gordon Ramsey, I am confident that my food will tantalize your palate. Do message me to let me know of what sort of experience you would like to have, and I will specifically craft it for you.')
+        person2 = Person(personId=2, personName='Betty Barker', personDesc='Hi everybody! I am Betty and I am a home chef! Although I am a Singaporean by birth, I still love to travel the world and experience new cuisine! Only recently, I just came home from Lebanon and I loved their food, so I tried making them. I think they are delicious and would like to share them with you over dinner. Let us come together for a social experience.')
+        person3 = Person(personId=3, personName='Charlie Chao', personDesc='Uncle has been working in the industry for more than 20 years, and has been cooking for a lot of customers already. Uncle would like to cook for you at new stall in Bukit Gombak. Uncle look forward to meeting you!')
+
+        db.session.add(person1)
+        db.session.add(person2)
+        db.session.add(person3)
+        db.session.commit()
+
+        food1 = Food(foodId=1, cookId=2, locationLong=103.866, locationLat=1.336, price=1200, quota=10, datetime="23rd Jan 2018, 1730hrs", cuisine='Chinese Food', description='I want to practice my tze char. I will serve 3 vegetable dishes with rice. Let us bond over dinner!', title='Simple Chinese Tze Char Dinner')
+        food2 = Food(foodId=2, cookId=1, locationLong=103.8755, locationLat=1.334, price=4800, quota=4, datetime="24th Jan 2018, 1800hrs", cuisine='Western Food', description='I am a chef of Western Food, I used to work for the Gordon Ramsay. We will be having some salads as starters, and some beef sirloin as a main. I will prepare the cuts to your liking of doneness. We will finish with a lava cake and some champaigne. This meal is best served with a family or couple.', title='Dining with a Professional Chef')
+        food3 = Food(foodId=3, cookId=2, locationLong=103.875, locationLat=1.329, price=2400, quota=6, datetime="25th Jan 2018, 1800hrs", cuisine='Lebanese Food', description='Help me see if my Lebanese cooking is delicious! We start with some home made hummus, followed by an open faced sabih, and end with Kanafe as dessert. It will be a treat to try these awesome foods from the middle east!', title='Lebanese is awesome!')
+        food4 = Food(foodId=4, cookId=3, locationLong=103.866, locationLat=1.33, price=800, quota=30, datetime="26th Jan 2018, 1800hrs", cuisine='Chinese Food', description='To celebrate Uncle and his new Hawker stall opening, Uncle will cook tze char for 30 people who sign up first. We eat together and happy together!', title="Uncle's Open House!")
+
+        db.session.add(food1)
+        db.session.add(food2)
+        db.session.add(food3)
+        db.session.add(food4)
+        db.session.commit()
+
+        feedback1 = Feedback(feedbackId=1, feedbackAuthorId=3, rating=5, foodId=1, message='The food God only knows.')
+        feedback2 = Feedback(feedbackId=2, feedbackAuthorId=2, rating=3, foodId=1, message='Your food is not very nice.')
+        feedback3 = Feedback(feedbackId=3, feedbackAuthorId=3, rating=5, foodId=2,
+        message='Spiritually awesome.')
+
+        feedback4 = Feedback(feedbackId=4, feedbackAuthorId=1, rating=4, foodId=2, message='The spices are good.')
+        feedback5 = Feedback(feedbackId=5, feedbackAuthorId=2, rating=5, foodId=1, message='The flowers in the rice are pretty.')
+
+        db.session.add(feedback1)
+        db.session.add(feedback2)
+        db.session.add(feedback3)
+        db.session.add(feedback4)
+        db.session.add(feedback5)
+        db.session.commit()
+
+        food3.attendees.append(person1)
+        db.session.add(food3)
+        db.session.commit()
+		
+class addOn(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('title', type=str)
+        parser.add_argument('desc', type=str)
+
+        args = parser.parse_args()
+        
+        longitude = 103.903
+        latitude = 1.398
+        foodId = 5
+        cookId = 2
+        price = 3000
+        quota = 5
+        datetime = "24th Jan 2018, 1900hrs"
+        cuisine = "Indian"
+        title = args['title']
+        description = args['desc']
+        
+        newFood = Food(foodId=foodId, cookId=cookId, locationLong=longitude,
+            locationLat = latitude, price=price, quota=quota, datetime=datetime,
+            cuisine=cuisine, description=description, title=title)
+
+        db.session.add(newFood)
+        db.session.commit()
+
 
 api.add_resource(getAll, '/event')
 api.add_resource(getFood, '/event/<int:fudId>')
 api.add_resource(getChef, '/chef/<int:chefId>')
 api.add_resource(postComment, '/feedback/<int:eventId>')
 api.add_resource(reset, '/reset')
+api.add_resource(addOn, '/add')
 
 if __name__ == '__main__':
     app.run(debug=True)
