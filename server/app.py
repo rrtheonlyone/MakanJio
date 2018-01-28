@@ -105,7 +105,7 @@ def eventmethod(event):
     collect.append(event.cookId)
     collect.append(event.locationLong)
     collect.append(event.locationLat)
-    collect.append(event.price)
+    collect.append(event.price / 100)
     collect.append(event.description)
     collect.append(event.datetime)
     collect.append(event.cuisine)
@@ -130,18 +130,36 @@ def eventmethod(event):
 
 
 class getFood(Resource):
-    def get(self, id):
+    def get(self, fudId):
         # Output is same order as above, index 12 is score
-        event = Food.query.filter_by(foodId=id).first()
+        event = Food.query.filter_by(foodId=fudId).first()
         return eventmethod(event)
+
+    # def post(self, id):
+    #     print("THE ID: " + str(id))
+    #     return {'Status': 200}
+
+    def post(self, fudId):
+        print("PRINTING THE TSUNDERE RESOURCE") 
+        print(Resource)
+        print("ZERO")
+        id = Resource.request.form.get('id')
+        event = fudId
+        dude = Person.query.filter_by(personId=id).first()
+        event = Food.query.filter_by(foodId=event).first()
+        event.attendees.append(dude)
+        db.session.add(event)
+        db.commit()
+        return {'Status': 200}
+
 
 
 #    0          1          2           3            4
 # chefname description feedbacks overallrating listofevents
 class getChef(Resource):
-    def get(self,id):
+    def get(self,chefId):
         o = []
-        currChef = Person.query.filter_by(personId=id).first()
+        currChef = Person.query.filter_by(personId=chefId).first()
         o.append(currChef.personName)
         o.append(currChef.personDesc)
         feedbacklist = []
@@ -184,17 +202,8 @@ class postComment(Resource):
         return {'Status' : 200}
 
 
-class goingToEvent(Resource):
-    def post(self):
-        id = self.request.form.get('id')
-        event = self.request.form.get('event')
-        dude = Person.query.filter_by(personId=id).first()
-        event = Food.query.filter_by(foodId=event).first()
-        event.attendees.append(dude)
-        db.session.add(event)
-        db.commit()
-        return {'Status': 200}
 
+# class goingToEvent(Resource):
 
 class reset(Resource):
     def get(self):
@@ -202,10 +211,9 @@ class reset(Resource):
         pass
 
 api.add_resource(getAll, '/event')
-api.add_resource(getFood, '/event/<int:id>')
-api.add_resource(getChef, '/chef/<int:id>')
+api.add_resource(getFood, '/event/<int:fudId>')
+api.add_resource(getChef, '/chef/<int:chefId>')
 api.add_resource(postComment, '/feedback/<int:eventId>')
-api.add_resource(goingToEvent, '/going')
 api.add_resource(reset, '/reset')
 
 if __name__ == '__main__':
